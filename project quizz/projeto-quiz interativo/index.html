@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz RIOT GAMES </title>  <!-- NOME DO SITE -->
+<style>
+  body { /*  aqui é o começo do CSS */ 
+    font-family: "Orbitron", sans-serif;  /* escolhi a fonte orbitron , achei mais chamativa */
+    background: #fff;  /* definir a cor branca como fundo */
+    padding: 400px; /* espaço interno de 400px */
+    display: flex; /* deixei o container flexivel */
+    justify-content: center; /* centralizei o quiz no centro horizontalmente */
+    align-items: center; /*  centralizei o quiz no centro verticalmente */
+    margin: 0; /*remove algum espaçamento do body  */
+  }
+  #quiz-container { /* caixa do quiz*/
+    max-width: 600px; /* a largura dele  */
+    background: #C0C0C0; /* a cor de fundo do quizcomo cinza claro  */
+    padding: 20px; /* espaço interno do quiz */
+    border-radius: 20px; /* arredondei as bordas dele */
+    opacity: 0.9; /* pra deixar o fundo mostrando um pouco na imagem  */ 
+  }
+  
+  .question { /* perguntas */
+    font-size: 30px; /* tamanho da fonte da pergunta  */
+    margin-bottom: 15px;  /* espaço que fica a baixo da pergunta , para separar as opçoes  */
+  }
+  .options button { /* parte dos botoes */
+    width: 100%; /* ocupa todo o tamanho do container  */
+    text-align: left; /* texto alinhado na esquerda */
+    padding: 10px; /* tamanho interno que dê para clicar  */
+    margin: 5px 0; /* espaço entre os botões*/
+    border: 1px solid #C0C0C0; /* borda pequena na cor cinza */
+    background: #eee; /* cor do botão */
+    border-radius: 5px; /* borda arrendondada */
+    cursor: pointer; /* indicar que é clicavél a opção */
+  }
+
+  .options button:hover {  /* quando passar o mouse */
+    background-color: bisque; /* fica na cor bege */
+  }
+  #timer { /* parte do cronometro */
+    font-weight: bold; /* deixar o cronometro em negrito */
+    margin-bottom: 10px; /* espaço do timer e dos outros elementos*/
+  }
+
+ /* eu queria que mostrasse na tela quando eu escolhesse a alternativa o que tava certo e o que tava errado , por isso criei essas 3 opçao quando a pessoa selecionar a resposta  */
+  .options button.correct { /* aqui ele é ativado quando a pessoa acerta a resposta , então toda vez q tiver um acerto , é chamado e mostrado na tela */
+  background-color: #4CAF50 !important; /* utilização da cor verde para mostrar que esta correto */
+  color: white !important; /*  por que a utlização do !important? nele eu consigo força ao codigo de que essa cor que ta sendo ativada na hora seja a principal , e não deixando que nenhuma outra cor invada e não mostre a cor utilizada , nesse caso a cor verde */
+  border-color: #45a049 !important; /* a cor da borda sendo escolhida a verde */ 
+}
+  .options button.wrong {  /* seguindo a logica , aqui é ativado quando a resposta for errada , toda vez que tiver um erro a classe é ativada e mostrada , sendo assim , mostra a opçao correta também para o usuario descobrir o que errou  */
+  background-color: #f44336; /* a cor de fundo coloquei vermelho para diferente o erro do acerto */
+  color: white;
+  border-color: #da190b; /* a cor da borda sendo vermelho  */
+}
+  .options button:disabled {  /* aqui p botao é desabilitado apos a resposta , pq se n tivesse essa opção o botão iria ficar aparecendo infinitamente na tela  */
+    cursor: default;
+    opacity: 0.8;
+}
+
+</style>
+</head>
+<body>
+<div id="quiz-container">  <!-- criei um bloco principal  -->
+  <div id="timer">Tempo: <span id="time-left"></span>s</div> <!--o timer ele cria um espaço onde eu vou colocar o cronometro , o "tempo" vai aparecer na tela , o span eu usei ele para colocar o texto dinamico e o "s" é oq vai aparecer para dizer os segundos quando o javascript rodar -->
+  <div class="question" id="question-text"></div> <!--o question eu usei para ultilizar um estilo que fiz no css e o question-text o js vai colocar o essa pergunta na div-->
+  <div class="options" id="options"></div>  <!--options ela cria a classe para eu mudar no css como eu fiz , e o id= options o js vai colocar os botoes com as alternativas -->
+  <div id="result"></div> <!-- aqui é onde o js vai colocar se a resposta esta correta ou errada-->
+</div>
+
+<script>
+// CONFIGURAÇÕES
+let tempoPorPergunta = 15; // tempo da pergunta que é mostrado na tela 
+
+const quiz = [  // aq irei por as 10 perguntas pedida , colocando as alternativas usando listas , para quando for acionado a correta aparecer na tela 
+  {
+    pergunta: "Qual a data de Fundação da Riot Games?", // pergunta 1 
+    alternativas: ["2006", "2007", "2005", "2008"],
+    correta: 0, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Onde está localizada a sede global (Headquarters) da Riot Games?", // pergunta 2 
+    alternativas: ["Seattle, EUA", "Seoul, Coreia do Sul", "Los Angeles, EUA", "Londres, Reino Unido" , "São Paulo, Brasil"],
+    correta: 2, // alternativa que na lista está correta 
+    pontos: 5 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Quem são os dois co-fundadores da Riot Games?", // pergunta 3 
+    alternativas: ["Nicolo Laurent e Brandon Beck", "Marc Merrill e Joe Ziegler", "Brandon Beck e Marc Merrill", "John Cena e Nicolo Laurent", "Anna Donlon e Marc Merrill"],
+    correta: 2, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Qual foi o primeiro e mais famoso título lançado pela Riot Games ?", //pergunta 4
+    alternativas: ["Project A", "Teamfight Tactics", "League of Legends", "Valorant", "Legends of Runeterra"],
+    correta: 2, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Em League of Legends, qual monstro neutro (camp) concede o buff do Barão, que fortalece os lacaios (minions) próximos? ?", //pergunta 5
+    alternativas: ["Dragão Ancião (Elder Dragon)", "Arauto do Vale (Rift Herald)", "Aronguejo (Scuttle Crab)", "Nashor", "Lobo Fantasma (Ghost Wolf"],
+    correta: 3, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Qual destes itens não é uma classe/tipo de campeão principal em League of Legends?", // pergunta6
+    alternativas: ["Atirador", "Mago", "Tanque", "Explorador" , "Suporte"],
+    correta: 3, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  }, 
+  {
+    pergunta: "Na série animada Arcane, qual personagem é conhecida por sua obsessão por bombas e explosivos, e é irmã de Vi?", // pergunta7
+    alternativas: ["Caitlyn", "Jinx", "Ekko", "Mel", "Seraphine"],
+    correta: 1, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Em que mês e ano o Valorant foi oficialmente lançado globalmente, após o período de Beta Fechado?", // pergunta8
+    alternativas: ["Setembro de 2020", "Junho de 2020", "Maio de 2021", "Março de 2020" , "Dezembro de 2019"],
+    correta: 1, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Durante o Beta Fechado, o acesso ao jogo Valorant era distribuído principalmente por meio de qual método promocional?", // pergunta 9 
+    alternativas: ["Comprando o Pacote de Fundador", "Inscrição no site da Riot", "Ganhando chaves em sorteios de streamers na Twitch/YouTube", "Ganhando partidas em League of Legends", "Sendo um jogador de nível alto no LoL"],
+    correta: 2,  // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  },
+  {
+    pergunta: "Qual Agente foi lançado junto com o lançamento oficial (Full Release), encerrando o Beta Fechado?",  // pergunta 10
+    alternativas: ["Skye", "Raze", "Reyna", "Killjoy" ,"Yoru"],
+    correta: 2, // alternativa que na lista está correta 
+    pontos: 10 // quantidade de pontos pela pergunta
+  } 
+];
+
+// aqui é onde armazenei todas as imagens por perguntas , cada imagem vai ser chamada juntamente com a sua pergunta 
+const fundos = [
+  "url('imagens quiz/riott_imagem.jpeg')", // fundo 1
+  "url('imagens quiz/riot_games_local.jpg')", // fundo 2 
+  "url('imagens quiz/cofundadores_riot.jpg')", // fundo 3 
+  "url('imagens quiz/fotos_jogos_riot.jpg')", // fundo 4
+  "url('imagens quiz/baron_lol.webp')", // fundo 5 
+  "url('imagens quiz/personagem1_fotoo.jpg')", // fundo 6 
+  "url('imagens quiz/arcanee_serie.jpg')", // fundo 7 
+  "url('imagens quiz/valorant_foto.jpg')", // fundo 8 
+  "url('imagens quiz/valorant2_foto.jpg')", // fundo 9 
+  "url('imagens quiz/personagem_foto.jpg')" // fundo 10 
+
+];
+ // nessa parte é onde ta a logica do quiz , onde mostra o que ta certo e o que ta errado 
+let indice = 0; 
+let pontuacao = 0; // aqui armazena a pontuação que o usuario está 
+let respostasErradas = []; // conta quantas respostas são conceituadas como errada , essa variavel vai ser importante para no final eu contabilizar os erros e mostrar na tela 
+let tempo; // o tempo que é mostrado em cima das perguntas é aqui onde ele é armazenado 
+let contador; // armazena o temporizador , até o tempo que o temporizador acaba 
+
+ // comeco da logica do quiz 
+function iniciarPergunta() { // essa funçao é ativada assim que comeca uma nova pergunta 
+  document.body.style.backgroundImage = fundos[indice] || 'none'; // localiza qual imagem é correspondente a pergunta , e o none é caso não tenha imagem , não colocar nads
+  document.body.style.backgroundSize = 'cover'; // ele cobre a tela toda , no caso a imagem 
+  document.body.style.backgroundPosition = 'center'; // centraliza a imagem na tela 
+  document.body.style.backgroundRepeat = 'no-repeat'; // aqui eu coloquei para o imagem não ficar se repetindo na tela 
+  if (indice >= quiz.length) {  // verifica se o quiz acabou , se o indice for igual ao numero de perguntas é por que o quiz acabou 
+    mostrarResultado();  // ai ele chama essa função para acabou com o quiz e mostrar o resultado 
+    return; 
+  }
+ // essa parte é onde carrega a nova pergunta 
+  const q = quiz[indice]; // o q recebe a pergunta
+  document.getElementById("question-text").textContent = `${indice+1} ${q.pergunta}`; // atualiza a nova pergunta e motra o numero da pergunta 
+  const opcoesDiv = document.getElementById("options"); // pega onde ficam os botoes 
+  opcoesDiv.innerHTML = ""; // e depois apaga o conteudo anterior , para não dar problema quando eu passar para a proxima pergunta 
+
+  q.alternativas.forEach((alt, i) => {  // o foreach ele andar por todas as alternativas 
+    const btn = document.createElement("button"); // ai ele cria um botão // 
+    btn.textContent = alt;  // coloca a alternativa no botão 
+    btn.onclick = () => responder(i); // quando for clicado , ele chama a função responder(i)
+    opcoesDiv.appendChild(btn); // adiciona o botão na tela 
+  }); 
+
+  tempo = tempoPorPergunta; // aqui reseta a pergunta 
+  document.getElementById("time-left").textContent = tempo; // define um tempo padrão para as perguntas
+  iniciarTimer(); // atualiza o timer  e começa a contagem 
+}
+
+function iniciarTimer() { // essa parte é onde faz o contador ir diminuindo (15,14,13,12,11....)
+  clearInterval(contador); // essa parte é importante por que não deixa que existam varios timers ao mesmo tempo 
+  contador = setInterval(() => { // cria um novo timer e executa algo 
+    tempo--;
+    document.getElementById("time-left").textContent = tempo; // aqui ele atualiza o tempo na tela , quando vai dimunindo 1 até zerar 
+
+    if (tempo <= 0) { // quando timer chegar em 0 , ele para.
+      clearInterval(contador);
+      indice++; // ele passa para a nova pergunta
+      iniciarPergunta(); // o chama a função iniciarPergunta novamente 
+    }
+  }, 1000);
+}
+
+function responder(i) { // ela é chamada quando o usuario responde a pergunta 
+  clearInterval(contador); // ele para o timer da pergunta 
+  const q = quiz[indice]; // pega a pergunta atual 
+  const botoes = document.getElementById("options").querySelectorAll('button'); //
+  const botaoClicado = botoes[i]; //
+  botoes.forEach(btn => btn.disabled = true); // essa logica é usada para desabilitar todo os botão , para que não haja alteração na resposta 
+ if (i === q.correta) { // caso seja corrreta 
+    pontuacao += q.pontos; // soma a potuação 
+    botaoClicado.classList.add('correct'); // e mostra a alternativa certa com a cor verde 
+  } else { // se errou 
+    respostasErradas.push(indice + 1); // guarda o numero da resposta errada 
+    botaoClicado.classList.add('wrong'); // mostra a alternativa em vermelho 
+    botoes[q.correta].classList.add('correct'); // e mostra a resposta correta em verde 
+  }
+setTimeout(() => { // essa parte é o tempo que vai demorar para aparecer a proxima pergunta
+    indice++; //
+    iniciarPergunta(); //
+  }, 1500); // 1,5 segundos depois , a pergunta aparece 
+}
+
+function mostrarResultado() { // aqui criei a função para chamar o resulto final , ao terminar o quiz 
+    document.body.style.backgroundImage = 'none'; // aqui e para remover os fundos das iamgens no final 
+    clearInterval(contador); // e para remover o timer 
+    
+    let listadeErros = '';  // aqui criei a listas de erro , começa vazia por isso do '' 
+    
+    // 2. aqui é onde tem a logica dos erros 
+    if (respostasErradas.length > 0) {  // depois de chamar as funçoes , vai mostrar na tela quais foram as erradas
+        // Se houver erros, cria a lista de questões erradas (números das perguntas) 
+        listadeErros = `  
+            <h3> Respostas erradas </h3> 
+            <p> Você errou as questões :</p>
+            <p><strong>${respostasErradas.join(', ')}</strong></p> `; // utilizei o join , ele faz com que o array criado vire uma string 
+    } else {
+        // se não tiver erros , vai aparecer essa mensagem na tela 
+        listadeErros = `
+            <p> parabéns! você acertou todas as ${quiz.length} perguntas!</p>  
+        `;
+    }
+    
+    //  aqui ele atualizar o container com o resultado completo                       
+    document.getElementById("quiz-container").innerHTML = `
+        <h2>Resultado Final</h2>
+        <p>pontuação total: <strong>${pontuacao}</strong></p>
+        <p>você respondeu ${quiz.length} perguntas.</p>
+        ${listadeErros}
+        <button onclick="window.location.reload();"> reiniciar Quiz</button>  
+    `; // ele apaga o quiz e subistitiu pelo o resultado final , depois disso tudo ele cria um botão para poder reiniciar o quiz se a pessoa quiser
+}
+iniciarPergunta();
+</script>
+</body>
+</html>

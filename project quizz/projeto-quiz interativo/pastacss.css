@@ -1,0 +1,54 @@
+body { /*  aqui é o começo do CSS */ 
+    font-family: "Orbitron", sans-serif;  /* escolhi a fonte orbitron , achei mais chamativa */
+    background: #fff;  /* definir a cor branca como fundo */
+    padding: 400px; /* espaço interno de 400px */
+    display: flex; /* deixei o container flexivel */
+    justify-content: center; /* centralizei o quiz no centro horizontalmente */
+    align-items: center; /*  centralizei o quiz no centro verticalmente */
+    margin: 0; /*remove algum espaçamento do body  */
+  }
+  #quiz-container { /* caixa do quiz*/
+    max-width: 600px; /* a largura dele  */
+    background: #C0C0C0; /* a cor de fundo do quizcomo cinza claro  */
+    padding: 20px; /* espaço interno do quiz */
+    border-radius: 20px; /* arredondei as bordas dele */
+  }
+  
+  .question { /* perguntas */
+    font-size: 30px; /* tamanho da fonte da pergunta  */
+    margin-bottom: 15px;  /* espaço que fica a baixo da pergunta , para separar as opçoes  */
+  }
+  .options button { /* parte dos botoes */
+    width: 100%; /* ocupa todo o tamanho do container  */
+    text-align: left; /* texto alinhado na esquerda */
+    padding: 10px; /* tamanho interno que dê para clicar  */
+    margin: 5px 0; /* espaço entre os botões*/
+    border: 1px solid #C0C0C0; /* borda pequena na cor cinza */
+    background: #eee; /* cor do botão */
+    border-radius: 5px; /* borda arrendondada */
+    cursor: pointer; /* indicar que é clicavél a opção */
+  }
+
+  .options button:hover {  /* quando passar o mouse */
+    background-color: bisque; /* fica na cor bege */
+  }
+  #timer { /* parte do cronometro */
+    font-weight: bold; /* deixar o cronometro em negrito */
+    margin-bottom: 10px; /* espaço do timer e dos outros elementos*/
+  }
+
+ /* eu queria que mostrasse na tela quando eu escolhesse a alternativa o que tava certo e o que tava errado , por isso criei essas 3 opçao quando a pessoa selecionar a resposta  */
+  .options button.correct { /* aqui ele é ativado quando a pessoa acerta a resposta , então toda vez q tiver um acerto , é chamado e mostrado na tela */
+  background-color: #4CAF50 !important; /* utilização da cor verde para mostrar que esta correto */
+  color: white !important; /*  por que a utlização do !important? nele eu consigo força ao codigo de que essa cor que ta sendo ativada na hora seja a principal , e não deixando que nenhuma outra cor invada e não mostre a cor utilizada , nesse caso a cor verde */
+  border-color: #45a049 !important; /* a cor da borda sendo escolhida a verde */ 
+}
+  .options button.wrong {  /* seguindo a logica , aqui é ativado quando a resposta for errada , toda vez que tiver um erro a classe é ativada e mostrada , sendo assim , mostra a opçao correta também para o usuario descobrir o que errou  */
+  background-color: #f44336; /* a cor de fundo coloquei vermelho para diferente o erro do acerto */
+  color: white;
+  border-color: #da190b; /* a cor da borda sendo vermelho  */
+}
+  .options button:disabled {  /* aqui p botao é desabilitado apos a resposta , pq se n tivesse essa opção o botão iria ficar aparecendo infinitamente na tela  */
+    cursor: default;
+    opacity: 0.8;
+}
